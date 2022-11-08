@@ -1,0 +1,15 @@
+{
+  "name": "ynov_api",
+  "version": "1.0.0",
+  "main": "app.js",
+  "author": "Maxime Cerjak <maxpro.cerjak@gmail.com>",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "scripts": {
+    "dev": "nodemon server-raw.js",
+  "nodemon" : "nodemon server-raw.js"
+  }
+}
