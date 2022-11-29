@@ -8,7 +8,17 @@ const taskSchema = new Schema({
     activityDescription: { type: String, required: true },
     activityDate: { type: Date, required: false },
     activityTime: { type: String, required: false },
-    createAt: { type: Date, default: Date.now }
+    activityDone: { type: Boolean, default: false ,required: false },
+    createAt: { type: Date, default: Date.now },
+    list: { type: Schema.Types.ObjectId, ref: "List" }
+}, {
+    timestamps: true 
+});
+
+taskSchema.static({
+    findByListId (listId) {
+        return this.find({ list: listId })
+    }
 })
 
 const Task = mongoose.model("task", taskSchema);

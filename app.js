@@ -1,4 +1,5 @@
 import '#config/database.js';
+import '#config/maildev.js';
 import Exemple from '#components/exemple/exemple-model.js';
 import Task from '#components/task/task-model.js';
 import Koa from 'koa';
