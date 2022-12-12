@@ -4,7 +4,7 @@ import { isAuthorized } from "#middlewares/jwt-handler.js";
 
 const taskRouter = new Router();
 
-// taskRouter.use(['/'], isAuthorized)
+taskRouter.use(['/:id', '/'], isAuthorized)
 
 taskRouter.get('/', TaskController.index);
 

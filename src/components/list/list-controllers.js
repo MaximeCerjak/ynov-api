@@ -5,7 +5,7 @@ import Joi from 'Joi'
 
 export async function index (ctx) {
   try {
-    const lists = await ListModel.find({})
+    const lists = await ListModel.findByUserId(ctx.state.user._id)
     ctx.ok(lists)
   } catch (e) {
     ctx.badRequest({ message: e.message })

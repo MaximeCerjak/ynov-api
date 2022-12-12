@@ -29,14 +29,6 @@ const userSchema = new Schema({
         },
         validation_email_token: String
     },
-    tasks: [{
-        type : Schema.Types.ObjectId,
-        ref: 'Task'
-    }],
-    lists: [{
-        type : Schema.Types.ObjectId,
-        ref: 'List'
-    }]
     }, {
         timestamps: true
     })

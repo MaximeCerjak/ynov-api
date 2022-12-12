@@ -1,10 +1,13 @@
-import Task from "#components/task/task-model.js";
+import TaskModel from "#components/task/task-model.js";
 import { updateTask } from '#components/task/task-use-case.js'
 import Joi from 'joi';
 
 export async function index (ctx) {
     try {
-        ctx.body = await Task.find({});
+        const user = ctx.state.user;
+        console.log(user)
+        // ctx.body = await TaskModel.findByUserId(user._id);
+        ctx.body = await TaskModel.find({user : user._id});
     }
     catch (err) {
         ctx.badRequest({message: err.message});
@@ -33,14 +36,12 @@ export async function create (ctx) {
             createAt: Joi.date().optional(),
             list: Joi.string().required()
         })
-        if(!ctx.params.id) throw new Error('No id supplied')
         const { error } = taskValidate.validate(ctx.request.body);
         if(error) {
             throw new Error(error.message);
         }else {
-            ctx.body = await Task.create(ctx.request.body);
+            ctx.body = await TaskModel.create({...ctx.request.body, user: ctx.state.user._id});
         }
-        ctx.body = await Task.find({});
     }
     catch (err) {
         ctx.badRequest({message: err.message});
@@ -50,7 +51,7 @@ export async function create (ctx) {
 export async function show (ctx) {
     try {
         if(!ctx.params.id) throw new Error('No id supplied');
-        ctx.body = await Task.findById(ctx.params.id);
+        ctx.body = await TaskModel.findById(ctx.params.id);
         if(!task) { return ctx.notFound() }
     }
     catch (err) {
@@ -108,7 +109,7 @@ export async function update (ctx) {
 
 export async function destroy (ctx) {
     try {
-        ctx.body = await Task.findByIdAndDelete(ctx.params.id);
+        ctx.body = await TaskModel.findByIdAndDelete(ctx.params.id);
     }
     catch (err) {
         ctx.badRequest({message: err.message});

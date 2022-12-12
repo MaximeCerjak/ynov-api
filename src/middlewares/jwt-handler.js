@@ -21,3 +21,4 @@ export const isAuthorized = compose([
     isAuthenticated,
     resolveUserFromJWT
 ]);
+

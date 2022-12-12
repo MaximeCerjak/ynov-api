@@ -1,4 +1,5 @@
 import UserModel from '#components/user/user-model.js'
+import TaskModel from '#components/task/task-model.js'
 import Joi from 'joi'
 import argon2, { hash } from 'argon2'
 import { sendWelcomeEmail } from '#services/mailing/welcome-email.js'
@@ -90,3 +91,15 @@ export async function updateUser (ctx) {
     ctx.badRequest({ message: e.message })
     }
 }
+
+export async function getTasksByUser (ctx) {
+    try {
+    const tasks = await TaskModel.find({ user: ctx.state.user._id })
+    ctx.ok(tasks)
+    } catch(e) {
+    ctx.badRequest({ message: e.message })
+    }
+}
+
+
+
