@@ -12,14 +12,12 @@ export async function index (ctx) {
   }
 }
 
-export async function limitIndex (ctx) {
+export async function listsAndTasks (ctx) {
   try {
-    const skip = parseInt(ctx.query.skip)
-    const limit = parseInt(ctx.query.limit)
     const lists = await ListModel
     .aggregate()
-    .match({ user: mongoose.Types.ObjectId(ctx.state.user._id) })
-    .lookup({ from: 'tasks', localField: '_id', foreignField: 'list', as: 'tasks' }).limit(limit).skip(skip)
+    .match({ user: ctx.state.user._id })
+    .lookup({ from: 'tasks', localField: '_id', foreignField: 'list', as: 'tasks' })
     ctx.ok(lists)
   } catch (e) {
     ctx.badRequest({ message: e.message })

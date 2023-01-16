@@ -110,7 +110,6 @@ export async function update (ctx) {
 export async function destroy (ctx) {
     try {
         ctx.body = await TaskModel.findOneAndDelete({ _id: ctx.params.id, user: ctx.state.user._id } );
-        if(!task) { return ctx.notFound() }
     }
     catch (err) {
         ctx.badRequest({message: err.message});

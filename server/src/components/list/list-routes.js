@@ -10,6 +10,6 @@ lists.get('/:id', listControllers.id)
 lists.post('/', listControllers.create)
 lists.put('/:id', listControllers.update)
 lists.delete('/:id', listControllers.destroy)
-lists.get('/limit', listControllers.limitIndex)
+lists.get('/listsAndTasks', listControllers.listsAndTasks)
 
 export default lists
