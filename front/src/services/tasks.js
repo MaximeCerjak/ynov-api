@@ -29,3 +29,13 @@ export const updateTask = async (id, params) => {
     throw error
   }
 }
+
+export const deleteTask = async (id) => {
+  try {
+    const response = await api.delete(`/tasks/${id}`)
+    return response.data
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+}

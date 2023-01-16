@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 // import { LocalStorage, SessionStorage } from 'quasar'
-import { getAllLists, createList, deleteList, getTheLastList } from 'src/services/lists'
+import { getAllLists, createList, deleteList, listAndTasks, updateList } from 'src/services/lists'
 
 export const useListStore = defineStore('list', {
   state: () => ({
-    list: {}
+    list: {},
+    lastList: {}
   }),
   getters: {
     getList () {
@@ -36,9 +37,17 @@ export const useListStore = defineStore('list', {
         throw new Error(e)
       }
     },
-    async lastList () {
+    async getListAndTasks () {
       try {
-        const res = await getTheLastList()
+        const res = await listAndTasks()
+        this.lastList = res
+      } catch (e) {
+        throw new Error(e)
+      }
+    },
+    async updateList (id, params) {
+      try {
+        const res = await updateList(id, params)
         this.list.push(res)
       } catch (e) {
         throw new Error(e)

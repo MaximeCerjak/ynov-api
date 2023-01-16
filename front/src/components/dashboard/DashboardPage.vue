@@ -6,9 +6,21 @@
         <p>Vous n'avez pas encore de liste</p>
       </div>
       <div v-else>
-        <div v-for="list in listData" :key="list.id">
-          <q-btn outlined class="q-my-sm q-mx-sm q-py-sm q-px-sm" color="primary" >{{ list.title }}</q-btn>
+        <div v-for="list in listData" :key="list._id">
+          <q-btn outlined class="q-my-sm q-mx-sm q-py-sm q-px-sm" @click="openDialog(list._id, list.title)" color="primary" >{{ list.title }}</q-btn>
           <span label="Delete" @click="deleteList(list._id)"><q-icon name="delete" color="red" /></span>
+          <q-dialog v-model="dialogOpen" ref="dialog" :list-id="listId" :list-title="listTitle">
+            <q-card>
+              <q-card-section>
+                <h2>Modifier le titre</h2>
+                <q-input label="Titre" type="text" outlined class="q-my-md" v-model="listForm.title"/>
+                <q-btn label="Modifier" class="full-width" color="primary" @click="updateList(listId)"/>
+              </q-card-section>
+              <q-card-actions align="right">
+                <q-btn flat label="Close" color="primary" v-close-popup />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
         </div>
       </div>
     </div>
@@ -22,23 +34,14 @@
           You are connected as {{ userData.user.email }}
         </p>
       </div>
-      <!-- <p class="text-h2 text-center">Voici la dernière liste ajoutée</p>
-      <q-card class="q-mt-md q-ml-md flex-center" v-for="list in lastList" :key="list._id" style="width:50%">
-        <q-card-section class="q-py-none q-px-none top-rounded">
-          <p class="text-bold q-py-sm q-px-sm top-rounded" style="background-color:rgba(77, 50, 141, 0.61); color:white">{{ list.title }}</p>
-          <div v-if="!taskData.length" class="q-py-sm q-px-sm">
-            <p>Vous n'avez pas encore de tache</p>
-            <q-btn label="Voir ma liste"></q-btn>
-          </div>
-        </q-card-section>
-      </q-card> -->
+      <p class="text-h2 text-center">Voici la dernière liste ajoutée</p>
+      <p>J'ai essayé d'utiliser la fonction aggregate pour jouer avec les skip et limit mais ça ne fut pas concluant (sur postman l'erreur m'indique que le cast sur l'ObjectId à échoué)</p>
       <div class="row">
         <div class="col" style="width:25%">
           <q-card class="q-mt-md q-ml-md">
             <q-card-section>
               <h2>Ajouter une liste</h2>
               <q-input label="Titre" type="text" outlined class="q-my-md" v-model="listForm.title" />
-              <q-input label="Description" type="text" outlined class="q-mb-md" v-model="listForm.description" />
               <q-btn label="Créer" class="full-width" color="primary" @click="createList"/>
             </q-card-section>
           </q-card>
@@ -65,12 +68,15 @@
               <div v-else>
                 <div v-for="task in taskData" :key="task.id">
                   <q-btn outlined class="q-my-sm q-mx-sm q-py-sm q-px-sm" color="primary" >{{ task.activityName }}</q-btn>
-                  <span label="Done" @click="deleteTask(task._id)">
+                  <span label="Done">
                     <span v-if="task.activityDone">
-                      <q-checkbox color="green" @click="handleUnvalid(task._id)" />
+                      <q-checkbox color="green" v-model="task.activityDone" @click="handleUnvalid(task._id)" />
                     </span>
                     <span v-else>
-                      <q-checkbox color="red" @click="handleValidate(task._id)" />
+                      <q-checkbox v-model="task.activityDone" @click="handleValidate(task._id)" />
+                    </span>
+                    <span @click="deleteTask(task._id)">
+                      <q-icon name="delete" color="red" />
                     </span>
                   </span>
                 </div>
@@ -137,12 +143,16 @@ const connected = computed(() => userStore.isConnected)
 const userData = computed(() => userStore.user)
 const taskData = computed(() => taskStore.tasks)
 const listData = computed(() => listStore.list)
-// const lastList = computed(() => listStore.lastList)
+const dialogOpen = ref(false)
+const listId = ref(null)
+const listTitle = ref(null)
 
-// const getTasksData = async () => {
-//   console.log(taskData)
-// }
-
+const openDialog = async (id, title) => {
+  listId.value = id
+  listTitle.value = title
+  console.log(listId.value)
+  dialogOpen.value = true
+}
 const taskForm = ref({
   activityType: '',
   activityName: '',
@@ -152,8 +162,7 @@ const taskForm = ref({
 })
 
 const listForm = ref({
-  title: '',
-  description: ''
+  title: ''
 })
 
 const createTask = async () => {
@@ -188,6 +197,7 @@ const handleValidate = async (id) => {
   try {
     await taskStore.validateTask(id, { activityDone: true })
     taskStore.getTasks()
+    console.log(id)
     Notify.create('Tâche validée')
   } catch (err) {
     console.log(err)
@@ -199,6 +209,26 @@ const handleUnvalid = async (id) => {
     await taskStore.validateTask(id, { activityDone: false })
     taskStore.getTasks()
     Notify.create('Tâche non validée')
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+const updateList = async (id) => {
+  try {
+    await listStore.updateList(id, listForm.value)
+    listStore.updateList()
+    Notify.create('Liste modifiée')
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+const deleteTask = async (id) => {
+  try {
+    await taskStore.deleteTask(id)
+    taskStore.getTasks()
+    Notify.create('Tâche supprimée')
   } catch (err) {
     console.log(err)
   }
